@@ -192,3 +192,4 @@ If not, you should:
 * install `cni` and `cni-plugins`
 * run `kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml` or other string from flannel's documentation
 * check that you have `--network-plugin=cni` in KUBELET_ARGS
+* `sysctl net.bridge.bridge-nf-call-iptables=1`

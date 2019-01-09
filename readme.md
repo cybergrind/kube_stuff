@@ -77,3 +77,45 @@ KUBELET_ARGS="--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --ku
 kubectl get cs
 kubectl get nodes
 ```
+
+
+#### Arch specific
+
+```
+systemctl disable kube-apiserver
+systemctl disable kube-controller-manager
+systemctl disable kube-scheduler
+systemctl disable kube-proxy
+```
+
+
+```
+# (find-file "/sudo:root@localhost:/usr/lib/systemd/system/kubelet.service")
+[Unit]
+Description=Kubernetes Kubelet Server
+Documentation=https://kubernetes.io/docs/concepts/overview/components/#kubelet https://kubernetes.io/docs/reference/generated/kubelet/
+After=docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/var/lib/kubelet
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/kubelet
+ExecStart=/usr/bin/kubelet \
+	    $KUBE_LOGTOSTDERR \
+	    $KUBE_LOG_LEVEL \
+	    $KUBELET_KUBECONFIG \
+	    $KUBELET_ADDRESS \
+	    $KUBELET_PORT \
+	    $KUBELET_HOSTNAME \
+	    $KUBE_ALLOW_PRIV \
+	    $KUBELET_ARGS
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+
+```

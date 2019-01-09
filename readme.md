@@ -35,6 +35,8 @@ ExecStart=/usr/bin/dockerd --bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}
 
 # kubernetes
 
+(find-file "/sudo:root@localhost:/etc/kubernetes")
+
 ```
 # (find-file "/sudo:root@localhost:/usr/lib/systemd/system/kubelet.service")
 kubeadm init --pod-network-cidr=10.244.0.0/16

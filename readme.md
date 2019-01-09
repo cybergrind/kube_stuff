@@ -126,6 +126,15 @@ WantedBy=multi-user.target
 
 ```
 # NOTE: need bootstrap config
+# delete file /etc/kubernetes/kubelet.kubeconfig
+
 KUBELET_KUBECONFIG="--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.kubeconfig"
 KUBELET_ARGS="--config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --pod-infra-container-image=k8s.gcr.io/pause:3.1 --allow-privileged=true"
+```
+
+
+Remove node with name `home`:
+
+```
+kubectl drain home --delete-local-data --force --ignore-daemonsets && kubectl delete node home && kubeadm reset
 ```

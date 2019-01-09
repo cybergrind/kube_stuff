@@ -100,6 +100,9 @@ After=docker.service
 Requires=docker.service
 
 [Service]
+CPUAccounting=true
+MemoryAccounting=true
+
 WorkingDirectory=/var/lib/kubelet
 EnvironmentFile=-/etc/kubernetes/config
 EnvironmentFile=-/etc/kubernetes/kubelet

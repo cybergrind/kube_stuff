@@ -45,7 +45,8 @@ KUBELET_EXTRA_ARGS=--cgroup-driver=cgroupfs kubeadm init --pod-network-cidr=10.2
 # kubeadm reset
 ```
 
-`kubectl get cs`
+
+Note: you should use the same cgroupdriver. Either `systemd` or `cgroupfs`
 
 ```
 # (find-file "/sudo:root@localhost:/etc/docker/daemon.json")
@@ -53,4 +54,26 @@ KUBELET_EXTRA_ARGS=--cgroup-driver=cgroupfs kubeadm init --pod-network-cidr=10.2
   "exec-opts": ["native.cgroupdriver=systemd"]
 }
 
+# OR
+
+ExecStart=/usr/bin/dockerd -H fd:// --exec-opt native.cgroupdriver=systemd
+```
+
+
+```
+# /etc/kubernetes/kubelet
+KUBELET_ADDRESS="--address=0.0.0.0"
+KUBELET_PORT="--port=10250"
+KUBELET_HOSTNAME="--hostname-override=zz"
+
+KUBELET_KUBECONFIG="--kubeconfig=/etc/kubernetes/kubelet.kubeconfig"
+
+KUBELET_ARGS="--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --pod-infra-container-image=k8s.gcr.io/pause:3.1"
+```
+
+#### Check status
+
+```
+kubectl get cs
+kubectl get nodes
 ```

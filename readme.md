@@ -78,10 +78,19 @@ KUBELET_ARGS="--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --ku
 ```
 kubectl get cs
 kubectl get nodes
+
+kubectl get pods --all-namespaces
 ```
 
 
 #### Arch specific
+
+Required packages:
+
+* kubernetes
+* cni
+* cni-plugins (flannel)
+
 
 ```
 systemctl disable kube-apiserver
@@ -132,7 +141,7 @@ WantedBy=multi-user.target
 # delete file /etc/kubernetes/kubelet.kubeconfig
 
 KUBELET_KUBECONFIG="--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.kubeconfig"
-KUBELET_ARGS="--config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --pod-infra-container-image=k8s.gcr.io/pause:3.1 --allow-privileged=true"
+KUBELET_ARGS="--config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --pod-infra-container-image=k8s.gcr.io/pause:3.1 --allow-privileged=true --network-plugin=cni"
 ```
 
 
@@ -141,3 +150,45 @@ Remove node with name `home`:
 ```
 kubectl drain home --delete-local-data --force --ignore-daemonsets && kubectl delete node home && kubeadm reset
 ```
+
+
+## Operations
+
+Run image:
+
+```
+# untaint master node (allowing scheduling to master)
+kubectl taint node zz node-role.kubernetes.io/master:NoSchedule-
+
+kubectl run -it some-pod --image=busybox --restart=Never /bin/sh
+
+# To delete
+kubectl delete pod some-pod
+
+
+# Run on specific node
+kubectl run -it pod4 --image=busybox --restart=Never --overrides='{ "apiVersion": "v1", "spec": { "template": { "spec": { "nodeSelector": { "kubernetes.io/hostname": "zz" } } } } }' /bin/sh'
+```
+
+
+```
+kubectl get nodes -owide
+
+kubectl describe nodes zz
+```
+
+
+## Troubleshooting
+
+
+#### No network between pods on different hosts
+
+Check `/etc/cni/net.d/` here should be file `10-flannel.conflist`
+
+If you started any pod on this server you should have `cni0` interface in `ip a`
+
+If not, you should:
+
+* install `cni` and `cni-plugins`
+* run `kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml` or other string from flannel's documentation
+* check that you have `--network-plugin=cni` in KUBELET_ARGS

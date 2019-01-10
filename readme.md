@@ -141,7 +141,7 @@ WantedBy=multi-user.target
 # delete file /etc/kubernetes/kubelet.kubeconfig
 
 KUBELET_KUBECONFIG="--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.kubeconfig"
-KUBELET_ARGS="--config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --pod-infra-container-image=k8s.gcr.io/pause:3.1 --allow-privileged=true --network-plugin=cni"
+KUBELET_ARGS="--config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --pod-infra-container-image=k8s.gcr.io/pause:3.1 --allow-privileged=true --network-plugin=cni --runtime-cgroups=/docker-daemon --kubelet-cgroups=/kubelet"
 ```
 
 

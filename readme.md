@@ -119,6 +119,53 @@ Default troubleshooting way:
 kubectl get namespaces
 kubectl get pods -n NS
 kubectl describe pod POD
+
+calicoctl get nodes -o wide
+kubectl get -n emojivoto deploy -o yaml | linkerd inject -| kubectl apply -f -
+
+
+# viz
+linkerd viz install | kubectl apply -f -
+linkerd buoyant install | kubectl apply -f -
+
+# if failed you can get config and apply it from dashboard
+# https://buoyant.cloud/agent/buoyant-cloud-k8s-zz-8=.yml | kubectl apply -f -
+
+linkerd viz dashboard
+
+## DELETE node
+kubectl drain tpad --force --ignore-daemonsets --delete-emptydir-data
+sudo kubeadm reset
+
+kubectl uncordon tpad
+```
+
+Commands:
+
+```
+
+kubectl get pods -n calico-system
+kubectl get pods -n linkerd
+
+kubectl get nodes -owide
+kubectl describe nodes zz
+
+# redeploy
+kubectl -n {NAMESPACE} rollout restart deploy
+
+# get deploy yaml for edit
+kubectl get -n emojivoto deploy -o yaml
+```
+
+Default troubleshooting way:
+
+```
+kubectl get namespaces
+kubectl get pods -n NS
+kubectl describe pod POD
+
+calicoctl get nodes -o wide
+sudo calicoctl get node status
 ```
 
 

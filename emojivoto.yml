@@ -116,7 +116,7 @@ metadata:
   name: vote-bot
   namespace: emojivoto
 spec:
-  replicas: 20
+  replicas: 1
   selector:
     matchLabels:
       app: vote-bot
@@ -127,6 +127,8 @@ spec:
         app: vote-bot
         version: v11
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: zz
       containers:
       - command:
         - emojivoto-vote-bot
@@ -160,6 +162,8 @@ spec:
         app: voting-svc
         version: v11
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: tpad
       containers:
       - env:
         - name: GRPC_PORT

@@ -1,5 +1,42 @@
+# 2021 edition
 
-# flannel (local installation for docker)
+https://wiki.archlinux.org/title/Kubernetes
+https://docs.projectcalico.org/getting-started/kubernetes/quickstart
+
+Install packages:
+```
+# control only
+yay -S etcd kubernetes-control-plane
+# all
+yay -S kubernetes-node kubeadm kubelet
+
+
+sudo systemctl enable kubelet
+sudo systemctl start kubelet
+
+# init
+sudo kubeadm init --pod-network-cidr='10.85.0.0/16' --node-name=zz
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+
+# download and edit https://docs.projectcalico.org/manifests/custom-resources.yaml
+kubectl create -f custom-resources.yaml
+
+
+# allow running nodes on master
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+```
+
+
+# 2019 edition
+
+## flannel (local installation for docker)
 
 Installation: https://github.com/coreos/flannel/blob/master/Documentation/running.md
 
@@ -33,7 +70,7 @@ ExecStart=/usr/bin/dockerd --bip=${FLANNEL_SUBNET} --mtu=${FLANNEL_MTU}
 ```
 
 
-# kubernetes
+## kubernetes
 
 (find-file "/sudo:root@localhost:/etc/kubernetes")
 

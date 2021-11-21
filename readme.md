@@ -2,7 +2,7 @@
 
 https://wiki.archlinux.org/title/Kubernetes
 https://docs.projectcalico.org/getting-started/kubernetes/quickstart
-
+https://docs.projectcalico.org/getting-started/clis/calicoctl/install
 Install packages:
 ```
 # control only
@@ -15,22 +15,110 @@ sudo systemctl enable kubelet
 sudo systemctl start kubelet
 
 # init
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+sysctl --system
+
+
 sudo kubeadm init --pod-network-cidr='10.85.0.0/16' --node-name=zz
 
 mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+curl https://docs.projectcalico.org/manifests/calico.yaml -O
 
-# download and edit https://docs.projectcalico.org/manifests/custom-resources.yaml
-kubectl create -f custom-resources.yaml
+# edit in calico.yml
+# put your CIDR and autodetect method
 
+## - name: CALICO_IPV4POOL_CIDR
+##   value: "10.85.0.0/16"
+## - name: IP_AUTODETECTION_METHOD
+##   value: "can-reach=8.8.8.8"
+
+
+# not working
+## # download and edit https://docs.projectcalico.org/manifests/custom-resources.yaml
+## kubectl create -f custom-resources.yaml
+
+# after this it will be created /etc/cni/net.d
 
 # allow running nodes on master
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
+
+# calicoctl
+cd ~/.local/bin
+curl -o calicoctl -O -L  "https://github.com/projectcalico/calicoctl/releases/download/v3.21.0/calicoctl" && chmod +x calicoctl
+
+curl -o kubectl-calico -O -L  "https://github.com/projectcalico/calicoctl/releases/download/v3.21.0/calicoctl" && chmod +x kubectl-calico
+
+# check
+calicoctl get nodes -o wide
+
+# linkerd
+yay -Ss linkerd
+linkerd check --pre
+linkerd install | kubectl apply -f -
+
+linkerd check
+
+# demo app
+curl -fsL https://run.linkerd.io/emojivoto.yml | kubectl apply -f -
+kubectl -n emojivoto port-forward svc/web-svc 8080:80
+
+# delete demo
+curl -fsL https://run.linkerd.io/emojivoto.yml | kubectl delete -f -
+
+
+# inject linkerd
+kubectl get -n emojivoto deploy -o yaml | linkerd inject -| kubectl apply -f -
+
+
+# viz
+linkerd viz install | kubectl apply -f -
+linkerd buoyant install | kubectl apply -f -
+
+# if failed you can get config and apply it from dashboard
+# https://buoyant.cloud/agent/buoyant-cloud-k8s-zz-8=.yml | kubectl apply -f -
+
+linkerd viz dashboard
+
+## DELETE node
+kubectl drain tpad --force --ignore-daemonsets --delete-emptydir-data
+sudo kubeadm reset
+
+kubectl uncordon tpad
+```
+
+Commands:
+
+```
+
+kubectl get pods -n calico-system
+kubectl get pods -n linkerd
+
+kubectl get nodes -owide
+kubectl describe nodes zz
+
+# redeploy
+kubectl -n {NAMESPACE} rollout restart deploy
+
+# get deploy
+kubectl get -n emojivoto deploy -o yaml
+```
+
+Default troubleshooting way:
+
+```
+kubectl get namespaces
+kubectl get pods -n NS
+kubectl describe pod POD
 ```
 
 

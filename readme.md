@@ -133,6 +133,19 @@ helm repo add traefik https://helm.traefik.io/traefik
 helm repo update
 helm install traefik traefik/traefik
 
+
+# update things
+helm show values traefik/traefik > traefik.values.yaml
+helm upgrade -f traefik.values.yaml traefik traefik/traefik
+# or apply linkerd
+helm template -f traefik.values.yaml traefik traefik/traefik | linkerd inject - | kubectl apply -f -
+
+traefik apply -f traefik_dashboard.yaml
+
+# check external ip
+kubectl get svc
+kubectl describe svc traefik
+
 ```
 
 Calico Commands:

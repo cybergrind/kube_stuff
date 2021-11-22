@@ -1,0 +1,17 @@
+log:
+  level: WARNING
+accessLog: {}
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: /etc/traefik/dynamic
+
+tracing:
+  jaeger:
+    localAgentHostPort: '127.0.0.1:6831'
+    propagation: b3

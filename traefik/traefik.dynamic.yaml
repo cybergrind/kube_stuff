@@ -1,0 +1,12 @@
+http:
+  services:
+    kube:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+        - url: "http://192.168.88.34:9000/"
+
+  routers:
+    kube:
+      rule: "Host(`traefik.kube.zz`)"
+      service: kube

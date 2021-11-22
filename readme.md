@@ -3,16 +3,16 @@
 https://wiki.archlinux.org/title/Kubernetes
 https://docs.projectcalico.org/getting-started/kubernetes/quickstart
 https://docs.projectcalico.org/getting-started/clis/calicoctl/install
+
+
 Install packages:
 ```
 # control only
 yay -S etcd kubernetes-control-plane
+# helpers
+yay -S kubectx  # kubectx kubens
 # all
 yay -S kubernetes-node kubeadm kubelet
-
-
-sudo systemctl enable kubelet
-sudo systemctl start kubelet
 
 # init
 cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
@@ -23,16 +23,48 @@ EOF
 sysctl --system
 
 
-sudo kubeadm init --pod-network-cidr='10.85.0.0/16' --node-name=zz
+sudo systemctl enable kubelet
+sudo systemctl start kubelet
 
-mkdir -p $HOME/.kube
-sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+Init kubernetes:
+```
+# kubeadm token generate and put into kubeadm-config.yaml:token
+
+sudo kubeadm init --node-name=zz --config=kubeadm-config.yaml
+# or sudo kubeadm init --pod-network-cidr='10.85.0.0/16' --node-name=zz
+
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
+# allow running nodes on master
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+# see details below
+kubectl apply -f calico.yaml
+linkerd install | kubectl apply -f -
+sudo calicoctl node status
+
+# linkerd related
+linkerd viz install | kubectl apply -f -
+linkerd buoyant install | kubectl apply -f -
+linkerd viz dashboard
+
+```
+
+Various:
+```
+# for upgrade
+sudo kubeadm upgrade apply 1.22.4
+# https://blog.honosoft.com/2020/01/31/kubeadm-how-to-upgrade-update-your-configuration/
+kubeadm config print init-defaults --component-configs KubeletConfiguration > kubeadm-config.yaml
+
+# edit
+kubeadm upgrade diff --config kubeadm-config.yaml
+kubeadm upgrade apply --config kubeadm-config.yaml --ignore-preflight-errors all --force --v=5
 
 
-kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+
 curl https://docs.projectcalico.org/manifests/calico.yaml -O
-
 # edit in calico.yml
 # put your CIDR and autodetect method
 
@@ -48,8 +80,6 @@ curl https://docs.projectcalico.org/manifests/calico.yaml -O
 
 # after this it will be created /etc/cni/net.d
 
-# allow running nodes on master
-kubectl taint nodes --all node-role.kubernetes.io/master-
 
 
 # calicoctl
@@ -96,7 +126,16 @@ sudo kubeadm reset
 kubectl uncordon tpad
 ```
 
-Commands:
+Traefik:
+
+```
+helm repo add traefik https://helm.traefik.io/traefik
+helm repo update
+helm install traefik traefik/traefik
+
+```
+
+Calico Commands:
 
 ```
 
@@ -140,7 +179,7 @@ sudo kubeadm reset
 kubectl uncordon tpad
 ```
 
-Commands:
+Other Commands:
 
 ```
 
@@ -155,6 +194,18 @@ kubectl -n {NAMESPACE} rollout restart deploy
 
 # get deploy yaml for edit
 kubectl get -n emojivoto deploy -o yaml
+
+
+# debug
+kubectl debug -it --image ghcr.io/micro-fan/python:4.0.4 vote-bot-6bd795dbc-hm4cn -c dd -n emojivoto --share-processes -- /bin/bash
+kubectl attach ddd -c dd -i -t
+
+# edit config
+kubectl edit pod -n emojivoto vote-bot
+
+# restart
+kubectl scale -n emojivoto deployment --replicas 0 vote-bot
+kubectl scale -n emojivoto deployment --replicas 1 vote-bot
 ```
 
 Default troubleshooting way:

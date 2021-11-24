@@ -34,6 +34,7 @@ Init kubernetes:
 
 sudo kubeadm init --node-name=zz --config=kubeadm-config.yaml
 # or sudo kubeadm init --pod-network-cidr='10.85.0.0/16' --node-name=zz
+# kubeadm token create --print-join-command
 
 sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # allow running nodes on master
@@ -92,6 +93,7 @@ curl -o kubectl-calico -O -L  "https://github.com/projectcalico/calicoctl/releas
 calicoctl get nodes -o wide
 
 # linkerd
+# curl -fsL https://run.linkerd.io/install | sh
 yay -Ss linkerd
 linkerd check --pre
 linkerd install | kubectl apply -f -
@@ -124,6 +126,10 @@ kubectl drain tpad --force --ignore-daemonsets --delete-emptydir-data
 sudo kubeadm reset
 
 kubectl uncordon tpad
+
+#taint back / Adding a taint to an existing node using NoSchedule
+kubectl untaint nodes node1 dedicated=special-user:NoSchedule
+
 ```
 
 Traefik:
@@ -188,6 +194,8 @@ linkerd viz dashboard
 ## DELETE node
 kubectl drain tpad --force --ignore-daemonsets --delete-emptydir-data
 sudo kubeadm reset
+sudo systemctl stop kubelet
+sudo rm -rf /etc/cni/net.d /etc/kubernetes
 
 kubectl uncordon tpad
 ```
@@ -195,13 +203,6 @@ kubectl uncordon tpad
 Other Commands:
 
 ```
-
-kubectl get pods -n calico-system
-kubectl get pods -n linkerd
-
-kubectl get nodes -owide
-kubectl describe nodes zz
-
 # redeploy
 kubectl -n {NAMESPACE} rollout restart deploy
 
@@ -232,6 +233,12 @@ calicoctl get nodes -o wide
 sudo calicoctl get node status
 ```
 
+zookeper + linkerd
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+kubectl create ns dev
+helm upgrade --install zookeeper bitnami/zookeeper --namespace dev --set replicaCount=3 --set podAnnotations.'linkerd\.io\/inject'=enabled
+```
 
 # 2019 edition
 

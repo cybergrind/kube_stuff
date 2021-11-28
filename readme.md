@@ -36,7 +36,12 @@ sudo kubeadm init --node-name=zz --config=kubeadm-config.yaml
 # or sudo kubeadm init --pod-network-cidr='10.85.0.0/16' --node-name=zz
 # kubeadm token create --print-join-command
 
-sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
+# if cannot create, check kubelet parameters, they should be like:
+# ExecStart=/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --network-plugin=cni --pod-infra-container-image=k8s.gcr.io/pause:3.5
+# + check cgroupDriver: cgroupfs OR systemd
+
+
+mkdir -p ~/.kube && sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # allow running nodes on master
 kubectl taint nodes --all node-role.kubernetes.io/master-
 

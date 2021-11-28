@@ -137,7 +137,7 @@ kubectl untaint nodes node1 dedicated=special-user:NoSchedule
 
 ```
 
-Traefik:
+#### Traefik:
 
 ```
 helm repo add traefik https://helm.traefik.io/traefik
@@ -156,10 +156,11 @@ traefik apply -f traefik_dashboard.yaml
 # check external ip
 kubectl get svc
 kubectl describe svc traefik
-
 ```
 
-Calico Commands:
+Basic auth: check [traefik/traefik_dashboard_remote.yaml](/traefik/traefik_dashboard_remote.yaml)
+
+#### Calico Commands:
 
 ```
 

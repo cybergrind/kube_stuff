@@ -1,0 +1,34 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashboard
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`traefik-host.perfectlabel.io`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+      middlewares:
+        - name: dashboard-auth
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: dashboard-auth
+spec:
+  basicAuth:
+    secret: super-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: super-secret
+  namespace: default
+data:
+  users: |2
+# echo USER:$(openssl passwd -apr1 -salt SALT PASSWORD) | base64
+    eechiB5aiza7IeShep4aetah9ohN1Aikei5Iequ3oSh5j==
+

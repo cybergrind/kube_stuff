@@ -160,6 +160,18 @@ kubectl describe svc traefik
 
 Basic auth: check [traefik/traefik_dashboard_remote.yaml](/traefik/traefik_dashboard_remote.yaml)
 
+
+#### Registry
+
+```
+docker run -d -p 5005:5000 --restart=always --name registry registry:2
+
+# edit docker service
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  --insecure-registry=10.0.0.111:5005
+
+# use images in format: 10.0.0.111:5005/imagename
+```
+
 #### Calico Commands:
 
 ```

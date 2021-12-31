@@ -60,6 +60,9 @@ linkerd viz dashboard
 
 Various:
 ```
+# set namespace
+kubectl config set-context --current --namespace longhorn-system
+
 # for upgrade
 sudo kubeadm upgrade apply 1.22.4
 # https://blog.honosoft.com/2020/01/31/kubeadm-how-to-upgrade-update-your-configuration/

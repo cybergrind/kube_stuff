@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn
+  # NOTE: must be installed in appropriate namespace with target service!
+  namespace: longhorn-system
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`longhorn.kube.zz`)
+      kind: Rule
+      services:
+        - namespace: longhorn-system
+          name: longhorn-frontend
+          port: 80

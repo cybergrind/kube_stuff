@@ -41,6 +41,14 @@ sudo kubeadm init --node-name=zz --config=kubeadm-config.yaml
 # ExecStart=/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --network-plugin=cni --pod-infra-container-image=k8s.gcr.io/pause:3.5
 # + check cgroupDriver: cgroupfs OR systemd
 
+# systemctl edit docker
+[SERVICE]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H fd:// --data-root=/docker --exec-opt native.cgroupdriver=systemd
+
+# comment /etc/kubernetes/kubelet.env
+#KUBELET_ARGS=--cni-bin-dir=/usr/lib/cni
+
 
 mkdir -p ~/.kube && sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # allow running nodes on master
@@ -61,7 +69,12 @@ linkerd viz dashboard
 Various:
 ```
 # set namespace
+kubens longhorn-system
+# OR
 kubectl config set-context --current --namespace longhorn-system
+
+# get all resources in namespace
+k get all -n longhorn-system
 
 # for upgrade
 sudo kubeadm upgrade apply 1.22.4

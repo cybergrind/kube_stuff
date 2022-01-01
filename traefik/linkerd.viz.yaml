@@ -1,0 +1,32 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: linkerd-viz
+  # NOTE: must be installed in appropriate namespace with target service!
+  namespace: linkerd-viz
+  # annotations:
+  #   ingress.kubernetes.io/custom-request-headers: l5d-dst-override:web.linkerd-viz.svc.cluster.local:8084
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`linkerd.kube.zz`)
+      kind: Rule
+      services:
+        - namespace: linkerd-viz
+          name: web
+          port: 8084
+          #port: 9994
+      middlewares:
+        - name: hheaders
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: hheaders
+  namespace: linkerd-viz
+spec:
+  headers:
+    customRequestHeaders:
+      Host: web.linkerd-viz.svc.cluster.local
+      #l5d-dst-override: 'web.linkerd-viz.svc.cluster.local:8084' 

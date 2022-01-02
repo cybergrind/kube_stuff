@@ -6,7 +6,14 @@ https://docs.projectcalico.org/getting-started/clis/calicoctl/install
 [cilium + kubeadm](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-kubeadm/)
 
 
-Install packages:
+#### Aliases:
+```bash
+# kubernetes
+alias kp='k get po -A -o wide'
+alias kev="kubectl get events --sort-by='.metadata.creationTimestamp' -A"
+```
+
+#### Install packages:
 ```
 # control only
 yay -S etcd kubernetes-control-plane

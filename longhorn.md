@@ -12,3 +12,13 @@ k get po -n longhorn-system --watch
 kubectl -n longhorn-system get svc
 # and access ip with port 80
 ```
+
+
+### troubleshooting
+
+
+```
+# when deleting resources from namespace PV remains
+
+k get persistentvolumes
+```

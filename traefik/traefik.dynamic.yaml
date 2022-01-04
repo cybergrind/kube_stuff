@@ -10,3 +10,15 @@ http:
     kube:
       rule: "Host(`traefik.kube.zz`)"
       service: kube
+
+tcp:
+  services:
+    kube-ssl-service:
+      loadBalancer:
+        servers:
+          - address: '192.168.88.34:9001'
+  routers:
+    kube-ssl:
+      entryPoints:
+        - kubessl
+      service: kube-ssl-service

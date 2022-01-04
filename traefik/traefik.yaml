@@ -4,6 +4,8 @@ accessLog: {}
 entryPoints:
   web:
     address: ":80"
+  kubessl:
+    address: ':443/tcp'
 
 providers:
   docker:

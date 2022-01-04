@@ -1,11 +1,15 @@
 log:
   level: WARNING
 accessLog: {}
+api:
+  dashboard: true
+  insecure: true
+
 entryPoints:
   web:
     address: ":80"
-  kubessl:
-    address: ':443/tcp'
+#   kubessl:
+#     address: ':443/tcp'
 
 providers:
   docker:

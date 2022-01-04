@@ -1,3 +1,16 @@
+# tcp:
+#   services:
+#     kube-ssl-service:
+#       loadBalancer:
+#         servers:
+#         - address: '192.168.88.34:9001'
+#   routers:
+#     kube-ssl:
+#       rule: "HostSNI(`registry.kube.zz`)"
+#       entryPoints:
+#       - kubessl
+#       service: kube-ssl-service
+
 http:
   services:
     kube:
@@ -8,17 +21,8 @@ http:
 
   routers:
     kube:
-      rule: "Host(`traefik.kube.zz`)"
+      entryPoints:
+        - web
+      rule: 'HostRegexp(`{sub}.kube.zz`) || HostRegexp(`{sub}.{sub2}.kube.zz`)'
       service: kube
 
-tcp:
-  services:
-    kube-ssl-service:
-      loadBalancer:
-        servers:
-          - address: '192.168.88.34:9001'
-  routers:
-    kube-ssl:
-      entryPoints:
-        - kubessl
-      service: kube-ssl-service

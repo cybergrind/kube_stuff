@@ -1,9 +1,9 @@
 log:
   level: WARNING
 accessLog: {}
-api:
-  dashboard: true
-  insecure: true
+# api:
+#   dashboard: true
+#   insecure: true
 
 entryPoints:
   web:

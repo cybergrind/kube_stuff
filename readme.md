@@ -194,6 +194,18 @@ docker run -d -p 5005:5000 --restart=always --name registry registry:2
 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  --insecure-registry=10.0.0.111:5005
 
 # use images in format: 10.0.0.111:5005/imagename
+
+```
+check https://github.com/cybergrind/fastapi_and_vue/blob/main/infra/helm-chart/templates/registry.yaml
+
+
+#### openkruise
+
+https://openkruise.io/docs/installation
+```
+helm repo add openkruise https://openkruise.github.io/charts/
+helm install kruise openkruise/kruise --version 1.0.0
+
 ```
 
 #### Calico Commands:

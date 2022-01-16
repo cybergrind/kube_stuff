@@ -71,6 +71,14 @@ linkerd viz install | kubectl apply -f -
 linkerd buoyant install | kubectl apply -f -
 linkerd viz dashboard
 
+
+# cilium
+# run on all nodes
+echo 'net.ipv4.conf.lxc*.rp_filter = 0' | sudo tee -a /etc/sysctl.d/90-override.conf && sudo systemctl start systemd-sysctl
+
+# install
+cilium install
+cilium hubble enable --ui
 ```
 
 Various:

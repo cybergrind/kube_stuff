@@ -21,3 +21,9 @@ tracing:
   jaeger:
     localAgentHostPort: '127.0.0.1:6831'
     propagation: b3
+
+
+metrics:
+  prometheus:
+    entryPoint: web
+    manualRouting: yes

@@ -26,3 +26,16 @@ http:
       rule: 'HostRegexp(`{sub}.kube.zz`) || HostRegexp(`{sub}.{sub2}.kube.zz`)'
       service: kube
 
+    metrics:
+      entryPoints:
+      - web
+      rule: "Host(`metrics.zz`) && Path(`/metrics`)"
+      service: prometheus@internal
+      middlewares:
+      - metricAuth
+
+  middlewares:
+    metricAuth:
+      basicAuth:
+        users:
+        - someuser:$apr1$Et9ea2ot$7o1vxitB.yb3es1bz3zWu.

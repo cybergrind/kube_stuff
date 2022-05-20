@@ -6,6 +6,8 @@ https://docs.projectcalico.org/getting-started/clis/calicoctl/install
 [cilium + kubeadm](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-kubeadm/)
 
 
+[EKS](/eks.md)
+
 #### Aliases:
 ```bash
 # kubernetes

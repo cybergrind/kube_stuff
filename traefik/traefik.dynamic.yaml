@@ -17,9 +17,15 @@ http:
       loadBalancer:
         passHostHeader: true
         servers:
-        - url: "http://192.168.88.34:9000/"
+          - url: "http://192.168.88.34:9000/"
 
   routers:
+    api:
+      entryPoints:
+        - web
+      rule: 'Host(`localhost`)'
+      service: api@internal
+
     kube:
       entryPoints:
         - web
@@ -28,14 +34,14 @@ http:
 
     metrics:
       entryPoints:
-      - web
+        - web
       rule: "Host(`metrics.zz`) && Path(`/metrics`)"
       service: prometheus@internal
       middlewares:
-      - metricAuth
+        - metricAuth
 
   middlewares:
     metricAuth:
       basicAuth:
         users:
-        - someuser:$apr1$Et9ea2ot$7o1vxitB.yb3es1bz3zWu.
+          - someuser:$apr1$Et9ea2ot$7o1vxitB.yb3es1bz3zWu.

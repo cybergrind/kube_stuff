@@ -28,7 +28,7 @@ services:
     labels:
       - "traefik.http.routers.api.rule=Host(`localhost`)"
       - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.api.entrypoints=traefik"
+      - "traefik.http.routers.api.entrypoints=web"
     volumes:
       - "/srv/traefik_letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

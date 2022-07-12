@@ -1,13 +1,17 @@
+---
 log:
   level: WARNING
 accessLog: {}
-# api:
-#   dashboard: true
-#   insecure: true
+
+api:
+  dashboard: true
+  insecure: true
 
 entryPoints:
   web:
     address: ":80"
+  traefik:
+    address: ':8085'
 #   kubessl:
 #     address: ':443/tcp'
 
